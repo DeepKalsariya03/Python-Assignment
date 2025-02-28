@@ -1,0 +1,8 @@
+[
+    {"Location": "Ahmedabad", "Name": "Grand Heritage", "Available_Rooms": 20, "Price_Per_Night": 5000},
+    {"Location": "Ahmedabad", "Name": "Royal Palace", "Available_Rooms": 15, "Price_Per_Night": 6000},
+    {"Location": "Ladakh", "Name": "Snow Retreat", "Available_Rooms": 10, "Price_Per_Night": 8000},
+    {"Location": "Ladakh", "Name": "Himalayan Stay", "Available_Rooms": 12, "Price_Per_Night": 7500},
+    {"Location": "Kutch", "Name": "Desert Paradise", "Available_Rooms": 18, "Price_Per_Night": 5500},
+    {"Location": "Kutch", "Name": "Sand Dunes Resort", "Available_Rooms": 8, "Price_Per_Night": 7000}
+]

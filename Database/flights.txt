@@ -1,0 +1,1 @@
+[{'From': 'Ahmedabad', 'To': 'Ladakh', 'Date': '06/06/25', 'Name': 'Frozen Airlines', 'Seats_Available': 22, 'Price': 50000}]

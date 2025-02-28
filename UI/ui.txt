@@ -1,0 +1,137 @@
+def show_travel_services(root, curr_user):
+    clear_widgets(root)
+
+    tk.Label(root, text=f"Welcome {curr_user}! \nChoose an option:", font=("Arial", 14)).pack(pady=10)
+
+    tk.Button(root, text="Book Flight", command=lambda: show_flight_menu(root)).pack(pady=5)
+    tk.Button(root, text="Book Hotel", command=lambda: show_hotel_menu(root)).pack(pady=5)
+    tk.Button(root, text="Book Package", command=lambda: messagebox.showinfo("Info", "Package booking not implemented")).pack(pady=5)
+
+def show_flight_menu(root):
+    """
+    From, To and Date Selection.
+    """
+    clear_widgets(root)
+
+    tk.Label(root, text="Finding a flights...", font=("Arial", 14)).pack(pady=10)
+
+    tk.Label(root, text="From:").pack()
+    from_location = ttk.Combobox(root, values=locations)
+    from_location.pack()
+
+    tk.Label(root, text="To:").pack()
+    to_location = ttk.Combobox(root, values=locations)
+    to_location.pack()
+
+    tk.Label(root, text="Date (DD-MM-YYYY):").pack()
+    date_entry = tk.Entry(root)
+    date_entry.pack()
+
+    search_button = tk.Button(root, text="Search Flights",
+                          command=lambda: validate_and_search(root, from_location, to_location, date_entry))
+
+    search_button.pack(pady=10)
+
+    back_button = tk.Button(root, text="Back", command=lambda: show_travel_services(root, curr_user="User"))
+    back_button.pack()
+
+def validate_and_search(root, from_location, to_location, date_entry):
+    from_loc = from_location.get()
+    to_loc = to_location.get()
+    date = date_entry.get()
+
+    if not from_loc or not to_loc or not date:
+        messagebox.showerror("Error", "Please fill in all fields!")
+        return
+
+    if from_loc == to_loc:
+        messagebox.showerror("Error", "From and To locations cannot be the same!")
+        return
+
+    show_all_flights(root, from_loc, to_loc, date)
+
+def show_all_flights(root, from_loc, to_loc, date):
+    """
+    List all available flights based on user's selection.
+    Allows booking a selected flight.
+    """
+    clear_widgets(root)
+
+    tk.Label(root, text=f"Available Flights from {from_loc} to {to_loc} on {date}", font=("Arial", 14)).pack(pady=10)
+
+    with open("Database/flights.txt", "r") as file:
+        flights = eval(file.read())
+
+    filtered_flights = [flight for flight in flights if 
+                        flight["From"] == from_loc and 
+                        flight["To"] == to_loc and 
+                        flight["Date"] == date]
+
+    if not filtered_flights:
+        tk.Label(root, text="No flights available!", fg="red", font=("Arial", 12)).pack(pady=10)
+        tk.Button(root, text="Back", command=lambda: show_flight_menu(root)).pack()
+        return
+
+    table = PrettyTable(["Name", "Seats Available", "Price"])
+    for flight in filtered_flights:
+        table.add_row([flight["Name"], flight["Seats_Available"], flight["Price"]])
+
+    tk.Label(root, text=table, font=("Courier", 10)).pack(pady=5)
+
+    tk.Label(root, text="Enter Flight Name to Book:").pack()
+    flight_entry = tk.Entry(root)
+    flight_entry.pack()
+
+    book_button = tk.Button(root, text="Book Flight", 
+                            command=lambda: book_flight(root, flight_entry.get(), filtered_flights))
+    book_button.pack(pady=10)
+
+    back_button = tk.Button(root, text="Back", command=lambda: show_flight_menu(root))
+    back_button.pack()
+
+def book_flight(root, flight_name, available_flights):
+    for flight in available_flights:
+        if flight["Name"] == flight_name:
+            if flight["Seats_Available"] > 0:
+                flight["Seats_Available"] -= 1
+                with open("Database/flights.txt", "w") as file:
+                    file.write(str(available_flights))
+                messagebox.showinfo("Success", f"Flight {flight_name} booked successfully!")
+                show_travel_services(root, curr_user="User")
+                return
+            else:
+                messagebox.showerror("Error", "No seats available!")
+                return
+
+    messagebox.showerror("Error", "Invalid flight name!")
+
+def show_hotel_menu(root):
+    """
+    Location and Date Selection.
+    """
+    clear_widgets(root)
+
+    tk.Label(root, text="Finding a hotels...", font=("Arial", 14)).pack(pady=10)
+
+    tk.Label(root, text="From:").pack()
+    location = ttk.Combobox(root, values=locations)
+    location.pack()
+    
+    tk.Label(root, text="Date (DD-MM-YYYY):").pack()
+    date_entry = tk.Entry(root)
+    date_entry.pack()
+
+    search_button = tk.Button(root, text="Search Hotels",
+                          command=lambda: show_all_hotels())
+
+    search_button.pack(pady=10)
+
+    back_button = tk.Button(root, text="Back", command=lambda: show_travel_services(root, curr_user="User"))
+    back_button.pack()
+
+def show_all_hotels(root):
+    """
+    List of all hptels as per user's selection.
+    Booking option.
+    """
+    clear_widgets(root)
